@@ -13,8 +13,9 @@ export const swipe_move = (key, timestamp) => {
   }
 }
 
-export const swipe_end = () => {
+export const swipe_end = (touches) => {
   return {
-    type: 'SWIPE_END'
+    type: 'SWIPE_END',
+    touches
   }
 }

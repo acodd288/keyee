@@ -6,8 +6,8 @@ const writeFileMiddleware = store => next => action => {
   let after = store.getState().buffer.current;
   if (before.isValid &&
     after.isValid &&
-    before.fileName == after.fileName &&
-    before.content != after.content) {
+    before.fileName === after.fileName &&
+    before.content !== after.content) {
     store.dispatch(writeFile(after));
   }
   return result

@@ -1,7 +1,8 @@
 import React from 'react'
 
 const styles = {
-  margin: "3px"
+  margin: "3px",
+  fontSize: '20px'
 }
 
 const Key = ({keyA, pressKey, onMouseOver, onMouseLeave}) => {
@@ -15,7 +16,7 @@ const Key = ({keyA, pressKey, onMouseOver, onMouseLeave}) => {
     text = keyA.text;
   }
   return (
-    <button style={styles} onClick={()=>pressKey(text)} data-swipe={text}>
+    <button className='key' style={styles} data-swipe={text}>
         {displayHtml}
     </button>
   );

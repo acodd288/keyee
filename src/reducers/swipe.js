@@ -1,3 +1,12 @@
+import {
+  SET_WORD_PRIORS,
+  SWIPE_TOUCH,
+  SWIPE_CLICK,
+  SWIPE_KEYBOARD_LAYOUT} from '../actions/swipe'
+import {
+  cornersFromTouches,
+  getCandidates} from './swipe/curvature'
+
 export function calculateWordProbability(word, keys) {
   const MissingWordLetterCost = -10;
   const MissingKeyCost = -1;
@@ -40,21 +49,20 @@ export function normalizeProbability(list) {
 export function normalize(list) {
   let min = list.reduce((acc, val) => Math.min(acc,val), 0);
   list = list.map(val=>val-min);
-  let sum = list.reduce((acc, val) => acc + val);
+  let sum = list.reduce((acc, val) => acc + val, 0);
   return list.map(val => val/sum);
 }
 
 
 export function arrayMultiply(list1, list2) {
   if (list1.length !== list2.length) {
-    throw "Lists must be the same length";
+    throw new Error("Lists must be the same length");
   }
 
   return list1.map((val, i) => val * list2[i]);
 }
 
-export function generateSuggestions(keys) {
-  let wordPriors = [{word:"import", probability:1}, {word:"for", probability:1}, {word:"if", probability:1}, {word:"while", probability:1}, {word:"let", probability:1}];
+export function generateSuggestions(wordPriors, keys) {
   let words = wordPriors.map(val => val.word);
   let priors = wordPriors.map(val => val.probability);
   priors = normalize(priors);
@@ -87,16 +95,42 @@ export function pressKey(state, action) {
   return [...previousKeys, {key ,start ,end}];
 }
 
-export const swipe = (state = {keys:[], suggestions:[]}, action) => {
+export const swipe = (state =
+  {
+    keys:[],
+    suggestions:[],
+    wordPriors:[],
+    touches:[],
+    simulatePath:[],
+    corners:[],
+    keyboardLayout:{stage:{x:0,y:0}, keys:[]}
+  }, action) => {
+  let suggestions = [];
+  let touches;
   switch (action.type) {
     case 'SWIPE_START':
-      return {...state, keys:[]};
+      return {...state, keys:[], touches:[], corners:[]};
     case 'SWIPE_MOVE':
       let keys = pressKey(state.keys, action);
-      let suggestions = generateSuggestions(keys);
-      return {keys, suggestions};
-    case 'SWIPE_END':
+      suggestions = generateSuggestions(state.wordPriors, keys);
+      // return {...state, keys, suggestions};
       return state;
+    case 'SWIPE_END':
+      ({touches} = action);
+      suggestions = getCandidates(touches, state.wordPriors, state.keyboardLayout.keys).slice(0,4)
+      let corners = cornersFromTouches(touches);
+      return {...state, touches, suggestions, corners};
+    case SWIPE_CLICK:
+      // let key = findClosestLetter(action,  state.keyboardLayout.keys);
+      return {...state};
+    case SWIPE_TOUCH:
+      touches = [...state.touches, {x:action.x, y:action.y}];
+      // suggestions = generateSuggestionsFromTouches(touches, state.keyboardLayout.keys, state.wordPriors)
+      return {...state, touches, suggestions};
+    case SET_WORD_PRIORS:
+      return {...state, wordPriors: action.wordPriors};
+    case SWIPE_KEYBOARD_LAYOUT:
+      return {...state, keyboardLayout: action.layout};
     default:
       return state;
   }

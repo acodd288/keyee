@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import atob from 'atob'
-import Cursor from './cursor'
-import {fetchFile} from '../actions/buffer'
+import BufferLine from './bufferLine'
+import {fetchFile, moveCursor} from '../actions/buffer'
 
 const styles = {
-  whiteSpace:'pre'
+  whiteSpace:'pre',
+  userSelect:'none'
 }
-
 
 function getRequestedFilename(props) {
   try {
@@ -15,6 +15,26 @@ function getRequestedFilename(props) {
   }
   catch (e) {
     return "";
+  }
+}
+
+function handleMove(event, dispatch) {
+  try {
+    let changedTouch = event.changedTouches[0];
+    let range = document.caretRangeFromPoint(changedTouch.clientX, changedTouch.clientY);
+    let span;
+    if (range.startContainer.nodeName === "#text") {
+      span = range.startContainer.parentElement;
+    }
+    else {
+      span = range.startContainer;
+    }
+    let start = parseInt(span.getAttribute('data-position'), 10);
+    let offset = range.startOffset;
+    dispatch(moveCursor(start + offset));
+  }
+  catch(e) {
+    console.log(e)
   }
 }
 
@@ -43,27 +63,19 @@ class Buffer extends Component {
     else {
       let text = current.content;
       let {cursorPosition} = current;
-      let textBeforeCursor = text.substring(0,cursorPosition);
-      let linesBeforeCursor = textBeforeCursor.split("\n");
-      let cursorLine = linesBeforeCursor.length - 1;
-      let cursorPositionOnLine = linesBeforeCursor[cursorLine].length;
       let lines = text.split("\n");
+      let lineStartPositions =
+        lines.reduce((acc, v) => {
+          return acc.concat([acc[acc.length - 1] + v.length + 1]);
+        }, [0])
       return (
         <div style={styles}>
           <div>{current.fileName}</div>
-          <div>
-              {lines.map((e, i) => {
-                if (i !== cursorLine) {
-                  return (<div key={i}>{e}</div>);
-                }
-                else {
-                  return (<div key={i}>
-                    <span>{e.substring(0,cursorPositionOnLine)}</span>
-                    <Cursor/>
-                    <span>{e.substring(cursorPositionOnLine)}</span>
-                  </div>)
-                }
-              })}
+          <div onTouchEnd={(e) => handleMove(e, this.props.dispatch)}>
+              {lines.map((e, i) => (
+                <BufferLine key={i} line={e}
+                  startPosition={lineStartPositions[i]}
+                  cursorPosition={cursorPosition}/>))}
           </div>
         </div>
       );
@@ -72,7 +84,9 @@ class Buffer extends Component {
 }
 
 const mapStateToProps = state => {
-  return state
+  return {
+    buffer: state.buffer
+  }
 }
 
 const mapDispatchToProps = dispatch => {

@@ -40,6 +40,28 @@ export function addText(text) {
   }
 }
 
+function maybeAddSpace(currentBuffer, suggestion) {
+  if (currentBuffer.isValid) {
+    let previousChar = currentBuffer.content[currentBuffer.cursorPosition - 1];
+    if (currentBuffer.cursorPosition === 0 || previousChar === ' ' || previousChar === '.' || previousChar === '\n') {
+
+    }
+    else {
+      suggestion = ' ' + suggestion;
+    }
+  }
+  return suggestion;
+}
+
+
+export function addWord(word) {
+  return (dispatch, getState) => {
+    let state = getState();
+    let text = maybeAddSpace(state.buffer.current, word);
+    dispatch(addText(text));
+  }
+}
+
 export const REMOVE_TEXT = 'REMOVE_TEXT'
 
 export function removeText(range) {

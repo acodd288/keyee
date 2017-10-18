@@ -6,12 +6,15 @@
     "atob": "^2.0.3",
     "btoa": "^1.1.2",
     "isomorphic-fetch": "^2.2.1",
-    "react": "^15.6.1",
+    "konva": "^1.6.8",
+    "react": "^15.6.2",
     "react-dom": "^15.6.1",
+    "react-konva": "^1.1.4",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
     "redux": "^3.7.2",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "react-scripts": "1.0.11",

@@ -18,8 +18,9 @@ const Suggestions = ({suggestions, onClick, isBold}) => {
     x = ".";
   }
   else {
-    x = suggestions.map((val) =>
+    x = suggestions.map((val, i) =>
     (<button
+      key={i}
       style={genStyles(val)}
       onClick={() => onClick(val.word)}>
       {val.word}

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import {fetchProject} from '../actions/project'
+import {fetchProject, expandFile} from '../actions/project'
 import Folder from './folder'
 import atob from 'atob'
 
@@ -33,11 +33,18 @@ class ProjectView extends Component {
     }
     else if (!project.isValid ||
       getRequestedProjectName(this.props) !== project.name) {
-        return (<div>Invalid project</div>)
+      return (<div>Invalid project</div>)
     }
     else {
       return (
-          <Folder name={project.files.path} children={project.files.children}/>
+        <div style={{overflow:'scroll'}}>
+
+          <Folder
+            file={project.files}
+            expand={(path, state) => this.props.dispatch(expandFile(path, state))}
+            expandList={project.expandList}
+            projectName={this.props.project.name}/>
+          </div>
       );
     }
   }

@@ -1,8 +1,8 @@
-import { combineReducers } from 'redux'
 import {
   INVALIDATE_PROJECT,
   REQUEST_PROJECT,
   RECEIVE_PROJECT,
+  EXPAND_FILE
 } from '../actions/project'
 
 function project(
@@ -12,6 +12,7 @@ function project(
     isValid: false,
     lastUpdated: null,
     files: null,
+    expandList: []
   },
   action
 ) {
@@ -34,6 +35,12 @@ function project(
         files: action.files,
         lastUpdated: action.receivedAt
       })
+    case EXPAND_FILE:
+      let expandList = state.expandList.filter(e => e !== action.path);
+      if (action.state) {
+        expandList.push(action.path);
+      }
+      return {...state, expandList}
     default:
       return state
   }

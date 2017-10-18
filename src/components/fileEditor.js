@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
-import Keyboard from './keyboard';
+import BigKeyboard from './bigKeyboard';
 import Buffer from './buffer';
+import { connect } from 'react-redux'
+import atob from 'atob'
+import {fetchProject} from '../actions/project'
 
 const styles = {
   position:'absolute',
@@ -24,25 +27,44 @@ const bufferStyle = {
   left:0,
   height:'65%',
   width:'100%',
-  overflow:'scroll'
+  overflow:'scroll',
 }
 
 class FileEditor extends Component {
+  componentDidMount(){
+    let urlProjectName = atob(this.props.match.params.projectName);
+    this.props.dispatch(fetchProject(urlProjectName));
+  }
+
   render() {
+
     return (
       <div style={styles} className="FileEditor">
         <div style={bufferStyle}>
           <Buffer match={this.props.match}/>
         </div>
         <div style={keyboardStyle}>
-          <Keyboard/>
+          <BigKeyboard/>
           <br/>
         </div>
       </div>
     );
   }
 }
+const mapStateToProps = state => {
+  return {}
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch
+  }
+}
+
+const componentConnect = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FileEditor)
 
 
-
-export default FileEditor;
+export default componentConnect;

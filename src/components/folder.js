@@ -4,24 +4,39 @@ import {
 } from 'react-router-dom'
 import btoa from 'btoa'
 
-const Folder = ({name, children}) => {
-  if (!children) {
+const Folder = ({file, expand, expandList, projectName}) => {
+  let name = file.path;
+  if (!file.children) {
     return (
       <div>
-        <Link to={'/editfile/'+btoa(name)}>{name}</Link>
+        <Link to={'/editfile/'+btoa(projectName)+'/'+btoa(name)}>{name}</Link>
+      </div>
+    );
+  }
+  else if (expandList.indexOf(file.path) === -1) {
+    return (
+      <div>
+      <span onClick={() => expand(name, true)}>></span>
+      <span>
+        {name}
+      </span>
       </div>
     );
   }
   else {
     return (
       <div>
-      <span>></span>
+      <span onClick={() => expand(name, false)}>></span>
       <span>
         {name}
         <div>
-          {children.map((e, i) => {
+          {file.children.map((e, i) => {
               return (
-                <Folder key={i} name={e.path} children={e.children}/>
+                <Folder key={i}
+                  file={e}
+                  expand={expand}
+                  expandList={expandList}
+                  projectName={projectName}/>
               );
             }
           )}

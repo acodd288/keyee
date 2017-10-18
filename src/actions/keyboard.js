@@ -6,3 +6,12 @@ export function setCapslock(state) {
     state
   }
 }
+
+export const SET_NUMBER_SYMBOLS = 'SET_NUMBER_SYMBOLS'
+
+export function setNumberSymbols(state) {
+  return {
+    type: SET_NUMBER_SYMBOLS,
+    state
+  }
+}

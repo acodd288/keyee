@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import {
   BrowserRouter as Router,
-  Route,
-  Link
+  Route
 } from 'react-router-dom'
 import FileEditor from './components/fileEditor'
 import Home from './components/home'
@@ -16,7 +15,7 @@ class App extends Component {
       <Router>
         <div>
           <Route exact path="/" component={Home}/>
-          <Route path="/editfile/:path" component={FileEditor}/>
+          <Route path="/editfile/:projectName/:path" component={FileEditor}/>
           <Route path="/viewproject/:path" component={ProjectView}/>
         </div>
       </Router>

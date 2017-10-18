@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { swipe_start, swipe_move, swipe_end } from '../actions'
 import { addText, removeText, moveCursor } from '../actions/buffer'
 import { setCapslock } from '../actions/keyboard'
+import { swipeTouch, setSwipeKeyboardLayout } from '../actions/swipe'
 import Key from './key'
 import Suggestions from './suggestions'
 
@@ -25,12 +26,13 @@ const qwerty = [
   [capsLock, moveLeft, moveRight]
 ]
 
-function handle_swipe_move(event, swipe_move) {
+function handle_swipe_move(event, dispatch) {
   let changedTouch = event.changedTouches[0];
   let elem = document.elementFromPoint(changedTouch.clientX, changedTouch.clientY);
   if (elem && elem.getAttribute('data-swipe')) {
-    swipe_move(elem.getAttribute('data-swipe'), event.timeStamp)
+    dispatch(swipe_move(elem.getAttribute('data-swipe'), event.timeStamp))
   }
+  dispatch(swipeTouch(changedTouch.clientX, changedTouch.clientY));
 }
 
 
@@ -51,7 +53,24 @@ function maybeAddSpace(currentBuffer, suggestion) {
   return suggestion;
 }
 
+function center(rect) {
+  return {
+    x: (rect.bottom + rect.top)/2,
+    y: (rect.left + rect.right)/2
+  }
+}
+
 class Keyboard extends Component {
+
+  componentDidMount() {
+    let ele = document.getElementById('keyboard');
+    let keys = Array.from(ele.getElementsByClassName('key')).map(ele => ({
+      center:center(ele.getBoundingClientRect()),
+      key:ele.getAttribute('data-swipe')}));
+    let stage = {x:window.innerWidth, y:window.innerHeight};
+    this.props.dispatch(setSwipeKeyboardLayout({stage, keys}));
+  }
+
   render() {
     const add_suggestion = (word) => {
       this.props.addText(maybeAddSpace(this.props.buffer.current, word));
@@ -102,9 +121,9 @@ class Keyboard extends Component {
 
     return (
       <div>
-        <div style={styles} className="Keyboard"
+        <div style={styles} id="keyboard" className="Keyboard"
           onTouchStart={(e) => this.props.swipe_start()}
-          onTouchMove={(e) => handle_swipe_move(e, this.props.swipe_move)}
+          onTouchMove={(e) => handle_swipe_move(e, this.props.dispatch)}
           onTouchEnd={(e) => handle_swipe_end(e, this.props.swipe.suggestions)}>
 
           <div>
@@ -113,7 +132,7 @@ class Keyboard extends Component {
               isBold={isBold}
               onClick={add_suggestion}/>
           </div>
-          {qwerty.map((row, index) => (
+                    {qwerty.map((row, index) => (
             <div key={index}>
               {row.map(letter => (
                 <Key key={letter.text || letter} keyA={letter} pressKey={pressKey} />
@@ -152,7 +171,8 @@ const mapDispatchToProps = dispatch => {
     },
     setCapslock: (state) => {
       dispatch(setCapslock(state))
-    }
+    },
+    dispatch
   }
 }
 
