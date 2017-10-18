@@ -23,6 +23,8 @@
   "proxy": "http://localhost:3001",
   "scripts": {
     "start": "react-scripts start",
+    "danger": "DANGEROUSLY_DISABLE_HOST_CHECK=true; react-scripts start",
+    "pm2": "pm2 start npm --name keyee --run danger; cd server; pm2 start npm --name keyee-http --run start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
