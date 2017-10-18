@@ -5,6 +5,8 @@ const fs = require('fs')
 const atob = require('atob')
 const _ = require('underscore')
 
+const SWIPE_TRACKS = process.env.HOME + '/swipeTracks.txt';
+
 app.use(bodyParser.json());
 
 app.get('/api/readfile/:filepath', function (req, res) {
@@ -35,11 +37,10 @@ app.post('/api/writefile/:filepath', function (req, res) {
 })
 
 app.post('/api/trackswipe', function (req, res) {
-  var path = '/home/acodd/swipeTracks.txt'
   var data = req.body.data;
   console.log(req.body);
   JSON.parse(JSON.stringify(data));
-  fs.appendFile(path,JSON.stringify(data)+'\n',(err) => {
+  fs.appendFile(SWIPE_TRACKS,JSON.stringify(data)+'\n',(err) => {
     if (err) {
       res.status(500).send(err);
     }

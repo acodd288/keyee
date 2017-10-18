@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "atob": "^2.0.3",
+    "btoa": "^1.1.2",
     "express": "^4.15.4",
     "underscore": "^1.8.3"
   }

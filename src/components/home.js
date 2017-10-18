@@ -8,10 +8,10 @@ function home() {
   return (
     <div>
       <div>
-      <Link to='/viewproject/L2hvbWUvYWNvZGQvdy90ZXN0cHJvag=='>test proj</Link>
+      <Link to={'/viewproject/' + btoa('/home/simple/projects/testproj')}>test proj</Link>
       </div>
       <div>
-        <Link to={'/viewproject/'+btoa('/home/acodd/w/keyboard-clone')}>keyboard-clone</Link>
+        <Link to={'/viewproject/'+btoa('/home/simple/projects/keyee')}>keyee</Link>
       </div>
     </div>);
 }
